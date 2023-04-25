@@ -1,10 +1,9 @@
 import { client } from '@/libs/webtorret'
+import { torrentIdFromQuery } from '@/utils/helpers'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { dn, tr, xt } = req.query as { dn: string; tr: string[]; xt: string }
-  const trs = tr.map((t) => `tr=${t}`).join('&')
-  const torrentId = `magnet:?xt=${xt}&dn=${dn}${trs}`
+  const torrentId = torrentIdFromQuery(req.query)
   if (!torrentId) {
     return res.status(400).json({ error: 'No torrent id provided' })
   }
@@ -17,5 +16,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   client.remove(torrent)
   torrent.destroy()
 
-  res.json({ success: true })
+  res.send(`${torrent.name} removed from client`)
 }

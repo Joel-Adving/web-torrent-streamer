@@ -8,5 +8,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       magnetURI: torrent.magnetURI
     }
   })
-  res.json(Array.from(torrents))
+
+  res.json(torrents ?? [])
 }

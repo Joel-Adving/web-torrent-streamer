@@ -3,9 +3,6 @@ const nextConfig = {
   experimental: {
     appDir: true
   },
-  api: {
-    responseLimit: false
-  },
   output: 'standalone'
 }
 

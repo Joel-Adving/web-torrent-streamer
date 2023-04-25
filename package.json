@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/fs-extra": "^11.0.1",
     "@types/node": "18.15.13",
     "@types/react": "18.0.38",
     "@types/react-dom": "18.0.11",
@@ -17,7 +16,6 @@
     "autoprefixer": "10.4.14",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.1",
-    "fs-extra": "^11.1.1",
     "next": "13.3.1",
     "postcss": "8.4.23",
     "react": "18.2.0",

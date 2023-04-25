@@ -2,6 +2,7 @@ import { client } from '@/libs/webtorret'
 import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 import type { Torrent } from 'webtorrent'
+import { torrentIdFromQuery } from '@/utils/helpers'
 
 export const config = {
   api: {
@@ -50,17 +51,14 @@ const streamTorrent = (torrent: Torrent, req: NextApiRequest, res: NextApiRespon
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { dn, tr, xt } = req.query as { dn: string; tr: string[]; xt: string }
-  const trs = tr.map((t) => `tr=${t}`).join('&')
-  const torrentId = `magnet:?xt=${xt}&dn=${dn}${trs}`
+  const torrentId = torrentIdFromQuery(req.query)
   if (!torrentId) {
-    return res.status(400).json({ error: 'No torrent id provided' })
+    return res.status(400).json({ error: 'Incorrect magnet URI' })
   }
 
-  const alreadyAddedTorrent = client.get(torrentId)
-  if (alreadyAddedTorrent) {
-    streamTorrent(alreadyAddedTorrent, req, res)
-    return
+  const torrentAlreadyAdded = client.get(torrentId)
+  if (torrentAlreadyAdded) {
+    return streamTorrent(torrentAlreadyAdded, req, res)
   }
 
   const torrent = await new Promise<Torrent>((resolve) => {
@@ -81,17 +79,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Error adding torrent' })
   }
 
-  let torrentReady = false
-  while (!torrentReady) {
-    await new Promise((r) => setTimeout(r, 1000))
-    if (torrent.files.length > 0 && torrent.ready && torrent.files.find((file) => file.name.endsWith('.mp4'))) {
-      torrentReady = true
+  let torrentIsReady = false
+  let count = 0
+  while (!torrentIsReady) {
+    if (count > 30) {
+      break
     }
+    if (torrent.files.length > 0 && torrent.ready && torrent.files.find((file) => file.name.endsWith('.mp4'))) {
+      torrentIsReady = true
+    }
+    await new Promise((r) => setTimeout(r, 1000))
+    count++
   }
 
-  if (torrentReady) {
-    streamTorrent(torrent, req, res)
-  } else {
-    res.status(400).json({ error: 'Torrent not ready' })
+  if (!torrentIsReady) {
+    return res.status(400).json({ error: 'Torrent not ready for streaming' })
   }
+
+  streamTorrent(torrent, req, res)
 }
