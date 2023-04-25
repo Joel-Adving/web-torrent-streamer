@@ -1,4 +1,4 @@
-## Getting Started
+## Web Torrent MP4 Streamer
 
 Install deps:
 
