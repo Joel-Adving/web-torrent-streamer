@@ -29,13 +29,13 @@ npm start
 Build:
 
 ```bash
-docker build -t torrent-app .
+docker build -t web-torrent-streamer .
 ```
 
 Start:
 
 ```bash
-docker run -p 3000:3000 torrent-app
+docker run -p 3000:3000 web-torrent-streamer
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
