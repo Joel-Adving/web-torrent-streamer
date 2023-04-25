@@ -1,23 +1,47 @@
 ## Web Torrent MP4 Streamer
 
-Install deps:
+Install dependencies:
 
 ```bash
 npm i 
-# or
-yarn
-# or
-pnpm i
 ```
 
-Run the development server:
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```
+
+Build:
+
+```bash
+npm run build
+```
+
+Build:
+
+```bash
+npm run build
+```
+
+Start production build:
+
+```bash
+npm start
+```
+
+### With Docker
+
+Build:
+
+```bash
+docker build -t torrent-app .
+```
+
+Start:
+
+```bash
+docker run -p 3000:3000 torrent-app
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
