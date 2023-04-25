@@ -6,16 +6,10 @@ Install dependencies:
 npm i 
 ```
 
-Run the dev server:
+Run dev server:
 
 ```bash
 npm run dev
-```
-
-Build:
-
-```bash
-npm run build
 ```
 
 Build:
