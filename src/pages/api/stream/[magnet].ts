@@ -2,7 +2,7 @@ import { client } from '@/libs/webtorret'
 import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 import type { Torrent } from 'webtorrent'
-import { torrentIdFromQuery } from '@/utils/helpers'
+import { isMediaFile, mediaType, torrentIdFromQuery } from '@/utils/helpers'
 
 export const config = {
   api: {
@@ -13,12 +13,14 @@ export const config = {
 const CHUNK_SIZE = 10 ** 6 // 1MB
 
 const streamTorrent = (torrent: Torrent, req: NextApiRequest, res: NextApiResponse) => {
-  const file = torrent?.files?.find((file) => file?.name?.endsWith('.mp4'))
+  const file = torrent?.files?.find((file) => isMediaFile(file?.name))
   if (!file) {
-    return res.status(400).json({ error: 'No mp4 file found' })
+    return res.status(400).json({ error: 'No media file found' })
   }
+
   const fileSize = file.length
-  const range = req.headers.range ?? 'bytes=0-'
+  const range = req.headers.range
+  const contentType = mediaType(file.name)
 
   if (range) {
     const start = Number(range.replace(/\D/g, ''))
@@ -35,7 +37,7 @@ const streamTorrent = (torrent: Torrent, req: NextApiRequest, res: NextApiRespon
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': end - start + 1,
-      'Content-Type': 'video/mp4'
+      'Content-Type': contentType
     })
 
     const readStream = file.createReadStream({ start, end })
@@ -43,7 +45,7 @@ const streamTorrent = (torrent: Torrent, req: NextApiRequest, res: NextApiRespon
   } else {
     res.writeHead(200, {
       'Content-Length': fileSize,
-      'Content-Type': 'video/mp4'
+      'Content-Type': contentType
     })
     const readStream = file.createReadStream()
     readStream.pipe(res)
@@ -82,10 +84,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let torrentIsReady = false
   let count = 0
   while (!torrentIsReady) {
-    if (count > 30) {
+    if (count > 60) {
       break
     }
-    if (torrent.files.length > 0 && torrent.ready && torrent.files.find((file) => file.name.endsWith('.mp4'))) {
+    if (torrent.files.length > 0 && torrent.ready && torrent.files.find((file) => isMediaFile(file.name))) {
       torrentIsReady = true
     }
     await new Promise((r) => setTimeout(r, 1000))

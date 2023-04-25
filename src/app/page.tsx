@@ -56,6 +56,7 @@ export default function Home() {
       <div className="flex gap-3 p-3">
         <form className="flex w-full gap-3" onSubmit={handleSubmit}>
           <input
+            placeholder="magnet:?xt=urn:btih:0506D..."
             className="w-full px-3 py-1 border rounded"
             value={magnetURI}
             onChange={(e) => setMagnetURI(e.target.value)}

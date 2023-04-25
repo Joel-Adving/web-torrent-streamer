@@ -1,9 +1,9 @@
-## Web Torrent MP4 Streamer
+## Web Torrent Streamer
 
 Install dependencies:
 
 ```bash
-npm i 
+npm i
 ```
 
 Run dev server:
