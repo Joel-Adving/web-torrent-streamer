@@ -48,7 +48,7 @@ export default function Home() {
       getTorrentsList()
     }
     video.addEventListener('canplay', eventHandler)
-    return () => video.addEventListener('canplay', eventHandler)
+    return () => video.removeEventListener('canplay', eventHandler)
   }, [])
 
   return (
